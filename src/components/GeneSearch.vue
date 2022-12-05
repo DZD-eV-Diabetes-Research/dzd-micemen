@@ -104,23 +104,23 @@ export default {
 </script>
 
 <template>
-  <header>
-    <h1>Gene Info</h1>
-    <p>You can search for publications which mention a specific gene.</p> 
-    <p>The found publications will sorted by Source and Organism.</p>
-  </header>
-  
   <section class="query">
-    <label for="gene" class="query-label"></label>
-    <input type="text" name="gene" v-model="gene" class="query-input" placeholder="Enter gene" />
+    <h2>Query</h2>
+    <form class="form" @submit.prevent="search()">
+      <div class="form__group">
+        <label for="gene" class="form__label query-label">Human Gene</label>
+        <input type="text" name="gene" v-model="gene" class="form__control query-input" placeholder="Enter gene" />
+        <span class="form__help-text">Name of the human gene, e.g. "FOXA2", case insensitive.</span>
+      </div>
 
-    <input type="submit" value="Search" @click="search()" />
+      <input type="submit" value="Search" />
+    </form>
   </section>
 
   <section class="result-table" v-if="results.show">
     <h2>Results</h2>
 
-    <table class="results">
+    <table class="table results">
       <tr>
         <th>Source</th>
         <th>Human</th>
@@ -130,21 +130,23 @@ export default {
         <td>PubMed</td>
         <td>
           <span class="results-loading" v-if="results.pubmed.human.isLoading">...</span>
-          <span 
+          <a 
+            href="#"
             class="results-number"
             v-if="!results.pubmed.human.isLoading" 
-            @click="showDetails('pubmed', 'human')">
+            @click.prevent="showDetails('pubmed', 'human')">
             {{ results.pubmed.human.publications.length }}
-          </span>
+          </a>
         </td>
         <td>
           <span class="results-loading" v-if="results.pubmed.mouse.isLoading">...</span>
-          <span 
+          <a 
+            href="#"
             class="results-number"
             v-if="!results.pubmed.mouse.isLoading" 
-            @click="showDetails('pubmed', 'mouse')">
+            @click.prevent="showDetails('pubmed', 'mouse')">
             {{ results.pubmed.mouse.publications.length }}
-          </span>
+          </a>
         </td>
       </tr>
 
@@ -152,12 +154,13 @@ export default {
         <td>Pharos</td>
         <td>
           <span class="results-loading" v-if="results.pharos.human.isLoading">...</span>
-          <span 
+          <a 
+            href="#"
             class="results-number"
             v-if="!results.pharos.human.isLoading" 
-            @click="showDetails('pharos', 'human')">
+            @click.prevent="showDetails('pharos', 'human')">
             {{ results.pharos.human.results ? '1':'' }}
-          </span>
+          </a>
         </td>
         <td>
         </td>
@@ -168,7 +171,7 @@ export default {
   <section class="result-details" v-if="details.show">
 
     <div v-if="details.source == 'pubmed'">
-      <h2>Publications in <b>{{ details.source }}</b> for <b>{{ details.organism }}</b> mentioning <b>{{ gene }}</b>: {{ results[ details.source ][ details.organism ].publications.length }} Results</h2>
+      <h3>Publications in <b>{{ details.source }}</b> for <b>{{ details.organism }}</b> mentioning <b>{{ gene }}</b>: {{ results[ details.source ][ details.organism ].publications.length }} Results</h3>
       <table>
         <tr v-for="pub in results[ details.source ][ details.organism ].publications">
           <td>{{ pub.pmId }}</td>
@@ -188,23 +191,25 @@ export default {
   </section>
 </template>
 
-<style scoped>
-
-html, body, * {
-  font-family: Helvetica, Arial, sans-serif;
-}
-.results-number {
-  text-decoration: underline;
-  color: blue;
-  cursor: pointer;
-}
-
-
+<style lang="scss">
 table {
   border-collapse: collapse;
 }
 th, td {
   padding: 3px 10px;
-  border: 1px solid black;
+  border: 1px solid var(--primary12);
+}
+
+.query {
+  padding: var(--space-6);
+  background-color: var(--primary1);
+  border-radius: 8px;
+
+  --button-bg-color: var(--accent);
+  --button-text-color: var(--white);
+
+  h2 {
+    margin-top: 0;
+  }
 }
 </style>
