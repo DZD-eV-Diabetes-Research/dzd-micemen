@@ -191,7 +191,7 @@ export default {
   </section>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 table {
   border-collapse: collapse;
 }
