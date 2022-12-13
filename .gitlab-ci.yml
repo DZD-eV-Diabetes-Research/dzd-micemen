@@ -1,0 +1,23 @@
+image: docker:git
+
+stages:
+  - local-image-build-n-push
+
+Push Tagged:
+  stage: local-image-build-n-push
+  only:
+    - tags
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker build --no-cache . -t $CI_REGISTRY_IMAGE:prod -t $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
+    - docker push $CI_REGISTRY_IMAGE --all-tags
+
+Push latest:
+  stage: local-image-build-n-push
+  only:
+    # Only "main" ("master" on older repos) should be tagged "latest"
+    - main
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker build --no-cache . -t $CI_REGISTRY_IMAGE:latest
+    - docker push $CI_REGISTRY_IMAGE --all-tags
