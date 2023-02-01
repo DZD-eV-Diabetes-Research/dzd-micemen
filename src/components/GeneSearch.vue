@@ -1,28 +1,46 @@
 <script>
 
+import Result from './Result.vue'
+
+import config from '../lib/config';
+
+import {
+  getPubMedResultsforOrganism,
+  getOrthologGenes,
+  getPharos,
+  getMelodiPresto
+} from '../lib/api';
+
+import { 
+  capitalize, 
+  decapitalize 
+} from '../lib/helper';
+
+
 export default {
   data() {
+    // init organisms specific result object for pubmed
+    var pubmed = {};
+    for (const organism of config.organisms) {
+      pubmed[organism] = {
+        publications: [],
+        isLoading: false
+      };
+    };
+
     return {
-      gene: '',
+      gene: '',                     // requested gene
+      organisms: config.organisms,  // array of all supported organisms
 
       results: {
-        show: false,
-        pubmed: {
-          human: {
-            isLoading: false,
-            publications: []
-          },
-          mouse: {
-            isLoading: false,
-            publications: []
-          }
-        },
+        show: false,                // shows result tables
+        orthologueGenes: {},        // state for ortholgue results
+        pubmed: pubmed,             // state of pubmed results
         pharos: {
-          human: {
-            isLoading: false,
-            results: {}
-          }
-        }
+          isLoading: false,
+          results: {}
+        },
+        melodiPresto: {}
       },
 
       details: {
@@ -34,70 +52,71 @@ export default {
   },
 
   methods: {
+    capitalize,
+
+    // Triggers requests to all apis and shows result table
     search: function () {
       this.results.show = true;
 
-      this.getResultsForPubmedHuman();
-      this.getResultsForPubmedMouse();
-      this.getResultsForPharosHuman();
+      this.loadOrthologueGenes();
+      this.loadPubmed();
+      this.loadPharos();
     },
 
+    // shows detail results table
     showDetails (source, organism) {
       this.details.source = source;
       this.details.organism = organism;
       this.details.show = true;
     },
 
-    async getResultsForPubmedHuman () {
-      this.results.pubmed.human.isLoading = true;
-
-      const url = 'https://restapi.connect.dzd-ev.de/mouseclinic/getHuman/?g=' + this.gene;
-      var results = await (await fetch(url)).json();
-      this.results.pubmed.human.publications = results;
-
-      this.results.pubmed.human.isLoading = false;
+    // load orthologue genes from api
+    async loadOrthologueGenes () {
+      var result = this.results.orthologueGenes;
+      result.isLoading = true;
+      result.organisms = await getOrthologGenes(this.gene);
+      result.isLoading = false;
     },
 
-    async getResultsForPubmedMouse () {
-      this.results.pubmed.mouse.isLoading = true;
-
-      const url = 'https://restapi.connect.dzd-ev.de/mouseclinic/getMouse/?g=' + this.gene;
-      var results = await (await fetch(url)).json();
-      this.results.pubmed.mouse.publications = results;
-
-      this.results.pubmed.mouse.isLoading = false;
+    // load pub med results from api
+    loadPubmed () {
+      // request pubmed results for all organisms
+      for (const organism of this.organisms) {
+        this.loadPubmedforOrganism(organism);
+      }
     },
 
-    async getResultsForPharosHuman () {
-      this.results.pharos.human.isLoading = true;
-
-      var query = `query targetDetails{
-  target(q:{sym:"${this.gene}"}) {
-    name
-    tdl
-    fam
-    novelty
-  }
-}`;
-      var request = {
-        operation: "targetDetails",
-        query: query,
-        variables: {}
-      };
-
-      const url = 'https://pharos-api.ncats.io/graphql';
-      var results = await (await fetch(url, {
-        method: 'POST',
-        body: JSON.stringify(request),
-        headers: {
-          'Content-Type': 'application/json'
+    async loadPubmedforOrganism (organism) {
+      // init initial data structure
+      if (!this.results.pubmed.hasOwnProperty(organism)) {
+        this.results.pubmed[organism] = {
+          publications: [],
+          isLoading: false
         }
-      })).json();
+      }
+      var result = this.results.pubmed[organism];
+      result.isLoading = true;
 
-      this.results.pharos.human.results = results.data.target;
+      result.publications = await getPubMedResultsforOrganism(organism, this.gene);
+  
+      result.isLoading = false;
+    },
 
-      this.results.pharos.human.isLoading = false;
+    async loadPharos () {
+      this.results.pharos.isLoading = true;
+      this.results.pharos.results = await getPharos(this.gene);
+      this.results.pharos.isLoading = false;
+    },
+
+    async loadMelodiPresto () {
+      this.results.melodiPresto.isLoading = true;
+      this.results.melodiPresto.results = await getMelodiPresto(this.gene);
+      this.results.melodiPresto.isLoading = false;
     }
+  },
+
+  components: {
+    Result
   }
 };
 
@@ -123,48 +142,54 @@ export default {
     <table class="table results">
       <tr>
         <th>Source</th>
-        <th>Human</th>
-        <th>Mouse</th>
+        <th v-for="organism in organisms" :key="organism">{{ capitalize(organism) }}</th>
       </tr>
       <tr>
-        <td>PubMed</td>
-        <td>
-          <span class="results-loading" v-if="results.pubmed.human.isLoading">...</span>
-          <a 
-            href="#"
-            class="results-number"
-            v-if="!results.pubmed.human.isLoading" 
-            @click.prevent="showDetails('pubmed', 'human')">
-            {{ results.pubmed.human.publications.length }}
-          </a>
-        </td>
-        <td>
-          <span class="results-loading" v-if="results.pubmed.mouse.isLoading">...</span>
-          <a 
-            href="#"
-            class="results-number"
-            v-if="!results.pubmed.mouse.isLoading" 
-            @click.prevent="showDetails('pubmed', 'mouse')">
-            {{ results.pubmed.mouse.publications.length }}
-          </a>
+        <td>Orthologues</td>
+        <td v-for="organism in organisms" :key="organism" >
+          <Result 
+            v-if="results.orthologueGenes.organisms[organism]"
+            :is-loading="results.orthologueGenes.isLoading"
+            :show-link="false"
+            :title="`SID: ${results.orthologueGenes.organisms[organism].SID}, Name: ${results.orthologueGenes.organisms[organism].Name} `"
+            >{{ results.orthologueGenes.organisms[organism].Symbol }}</Result>
         </td>
       </tr>
+      <tr>
+        <td><a href="https://pubmed.ncbi.nlm.nih.gov/" target="new">PubMed</a></td>
+        <td v-for="organism in organisms" :key="organism">
+          <Result 
+            :is-loading="results.pubmed[organism].isLoading"
+            @click.prevent="showDetails('pubmed', organism)"
+            :show-link="true"
+            >{{ results.pubmed[organism].publications.length }}</Result>
+        </td>
+      </tr>
+    </table>
+
+    <h3>Not organism-specific</h3>
+
+    <table class="table results">
 
       <tr>
-        <td>Pharos</td>
+        <td><a href="https://pharos.nih.gov/" target="new">Pharos</a></td>
         <td>
-          <span class="results-loading" v-if="results.pharos.human.isLoading">...</span>
-          <a 
-            href="#"
-            class="results-number"
-            v-if="!results.pharos.human.isLoading" 
-            @click.prevent="showDetails('pharos', 'human')">
-            {{ results.pharos.human.results ? '1':'' }}
-          </a>
-        </td>
-        <td>
+          <Result 
+            :is-loading="results.pharos.isLoading"
+            @click.prevent="showDetails('pharos', 'human')"
+            :show-link="true"
+            >{{ results.pharos.results ? 'Show result': 'no result' }}</Result>
         </td>
       </tr>
+      <!--tr>
+        <td>Melodi Presto</td>
+        <td>
+          <Result 
+            :is-loading="results.melodiPresto.isLoading"
+            @click.prevent="showDetails('melodiPresto', 'human')"
+            >{{ results.pharos.results ? 'Show result': 'no result' }}</Result>
+        </td>
+      </tr-->
     </table>
   </section>
 
@@ -182,10 +207,19 @@ export default {
     <div v-if="details.source == 'pharos'">
       <h2>Pharos Data for {{ gene }} in {{ details.organism }}</h2>
       <ul>
-        <li>Name: <b>{{ results.pharos.human.results.name }}</b></li>
-        <li>tdl: <b>{{ results.pharos.human.results.tdl }}</b></li>
-        <li>fam: <b>{{ results.pharos.human.results.fam }}</b></li>
-        <li>novelty: <b>{{ results.pharos.human.results.novelty }}</b></li>
+        <li>Name: <b>{{ results.pharos.results.name }}</b></li>
+        <li>tdl: <b>{{ results.pharos.results.tdl }}</b></li>
+        <li>fam: <b>{{ results.pharos.results.fam }}</b></li>
+        <li>novelty: <b>{{ results.pharos.results.novelty }}</b></li>
+      </ul>
+    </div>
+    <div v-if="details.source == 'melodiPresto'">
+      <h2>Pharos Data for {{ gene }} in {{ details.organism }}</h2>
+      <ul>
+        <li>Name: <b>{{ results.melodiPresto.results.name }}</b></li>
+        <li>tdl: <b>{{ results.pharos.results.tdl }}</b></li>
+        <li>fam: <b>{{ results.pharos.results.fam }}</b></li>
+        <li>novelty: <b>{{ results.pharos.results.novelty }}</b></li>
       </ul>
     </div>
   </section>

@@ -3,11 +3,11 @@
     <div class="footer__content">
       <div class="footer__logos">
         <span>Sponsored By</span>
-        <img src="/img/logos/GMC.png" alt="" />
+        <img src="/img/logos/GMC.png" alt="German Mouse Clinic" />
       </div>
       <div class="footer__links">
-        <a href="#">Imprint</a>
-        <a href="#">Privacy Policy</a>
+        <a href="https://www.dzd-ev.de/footermenue/impressum/index.html" target="_new">Imprint</a>
+        <!--a href="#">Privacy Policy</a-->
       </div>
     </div>
   </footer>
