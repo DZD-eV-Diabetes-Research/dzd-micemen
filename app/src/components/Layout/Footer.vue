@@ -2,8 +2,8 @@
   <footer class="footer">
     <div class="footer__content">
       <div class="footer__logos">
-        <span>Sponsored By</span>
-        <img src="/img/logos/GMC.png" alt="German Mouse Clinic" />
+        <img src="/img/logos/helmholtz.png" alt="Helmholtz Munich" />
+        <img src="/img/logos/gmc.png" alt="German Mouse Clinic" />
       </div>
       <div class="footer__links">
         <a href="https://www.dzd-ev.de/footermenue/impressum/index.html" target="_new">Imprint</a>
@@ -58,7 +58,7 @@
     gap: var(--space-4);
 
     img {
-      max-width: 140px;
+      max-height: 60px;
     }
   }
 
