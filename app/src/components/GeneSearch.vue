@@ -215,8 +215,6 @@ export default {
         <span class="form__help-text">Name of the human gene, e.g. "FOXA2", case insensitive.</span>
       </div>
 
-      <div class="loading"></div>
-
       <input type="submit" value="Search" />
     </form>
   </section>
