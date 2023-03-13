@@ -8,7 +8,7 @@
         </div>
       </div>
       <div class="nav__logo">
-        <img src="/img/logos/DZD_Pantone.png" alt="">
+        <img src="/img/logos/dzd.png" alt="">
       </div>
     </div>
   </header>
@@ -67,5 +67,9 @@
     img {
       max-width: 100%;
     }
+  }
+
+  .about {
+    padding: var(--space-6);
   }
 </style>

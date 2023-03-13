@@ -77,8 +77,10 @@ export async function getPharos (gene) {
 };
 
 /**
- * Requests information from Melodi Presto ENRICH endpoint
- * Currently blocked by CORS settings
+ * Requests information from Melodi Presto ENRICH endpoint - proxied by DZD EV
+ * Check docs how to use via proxy (different interface):
+ * https://restapi.connect.dzd-ev.de/
+ * 
  * API Docs: https://melodi-presto.mrcieu.ac.uk/docs/ 
  * Demo: https://melodi-presto.mrcieu.ac.uk/app/enrich/
  * 
@@ -86,18 +88,34 @@ export async function getPharos (gene) {
  * @returns Object
  */
 export async function getMelodiPresto (gene) {
-  const url = 'https://melodi-presto.mrcieu.ac.uk/api/enrich/';
-  const request = { query: gene }
+  const stringifiedQuery = encodeURIComponent(JSON.stringify({ query: gene }));
+  const url = 'https://restapi.connect.dzd-ev.de/melodi/enrich%2F?payload=' + stringifiedQuery;
 
   var results = await (await fetch(url, {
     method: 'POST',
-    body: JSON.stringify(request),
     headers: {
       'Content-Type': 'application/json',
       'accept': 'application/json'
     }
   })).json();
-  var results = await (await fetch(url)).json();
 
+  var decodedResult = JSON.parse(results);
+
+  return decodedResult;
+};
+
+export async function getTitleForPubMedIDs (listOfIds) {
+  // build query
+  var query = '';
+  for (const id of listOfIds) query += 'g=' + id + '&';
+
+  const url = config.apiBaseUrl + 'getPudMedID2Title/?' + query;
+  var results = await (await fetch(url)).json();
+  return results;
+};
+
+export async function getGWAS (gene) {
+  const url = config.apiBaseUrl + 'getGWASinformation/?g=' + gene;
+  var results = await (await fetch(url)).json();
   return results;
 };
