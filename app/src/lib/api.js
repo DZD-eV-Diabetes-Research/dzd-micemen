@@ -14,7 +14,7 @@ import { capitalize, decapitalize } from './helper';
  * @returns Array of article objects
  */
 export async function getPubMedResultsforOrganism (organism, gene) {
-  const url = config.apiBaseUrl + 'get' + capitalize(organism) + '/?g=' + gene;
+  const url = config.apiBasePath + 'get' + capitalize(organism) + '/?g=' + gene;
   var results = await (await fetch(url)).json();
   return results;
 };
@@ -27,7 +27,7 @@ export async function getPubMedResultsforOrganism (organism, gene) {
  * @returns Object with organism as key
  */
 export async function getOrthologGenes (gene) {
-  const url = config.apiBaseUrl + 'getOverviewOrthologues/?g=' + gene;
+  const url = config.apiBasePath + 'getOverviewOrthologues/?g=' + gene;
   var results = await (await fetch(url)).json();
 
   // takes the given array an normalizes it as an object with organism as key for easier use in vue
@@ -89,7 +89,7 @@ export async function getPharos (gene) {
  */
 export async function getMelodiPresto (gene) {
   const stringifiedQuery = encodeURIComponent(JSON.stringify({ query: gene }));
-  const url = 'https://restapi.connect.dzd-ev.de/melodi/enrich%2F?payload=' + stringifiedQuery;
+  const url = config.apiBaseUrl + 'melodi/enrich%2F?payload=' + stringifiedQuery;
 
   var results = await (await fetch(url, {
     method: 'POST',
@@ -109,13 +109,13 @@ export async function getTitleForPubMedIDs (listOfIds) {
   var query = '';
   for (const id of listOfIds) query += 'g=' + id + '&';
 
-  const url = config.apiBaseUrl + 'getPudMedID2Title/?' + query;
+  const url = config.apiBasePath + 'getPudMedID2Title/?' + query;
   var results = await (await fetch(url)).json();
   return results;
 };
 
 export async function getGWAS (gene) {
-  const url = config.apiBaseUrl + 'getGWASinformation/?g=' + gene;
+  const url = config.apiBasePath + 'getGWASinformation/?g=' + gene;
   var results = await (await fetch(url)).json();
   return results;
 };
