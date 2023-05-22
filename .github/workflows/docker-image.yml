@@ -9,9 +9,6 @@ jobs:
     name: Build and Push Docker image to Docker Hub
     runs-on: ubuntu-latest
     steps:
-      - name: Check out the repo
-        uses: actions/checkout@v3
-
       - name: Get branch name
         id: branch-name
         uses: tj-actions/branch-names@v7
@@ -24,7 +21,10 @@ jobs:
           echo "steps.branch-name.outputs.default_branch: ${{ steps.branch-name.outputs.default_branch }}"
           echo "steps.branch-name.outputs.head_ref_branch: ${{ steps.branch-name.outputs.head_ref_branch }}"
           echo "steps.branch-name.outputs.ref_branch: ${{ steps.branch-name.outputs.ref_branch }}"
-
+      - name: Check out the repo
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ steps.branch-names.outputs.head_ref_branch }}
       - name: Extract tag name
         shell: bash
         run: echo "tag=${GITHUB_REF#refs/*/}" >> $GITHUB_OUTPUT
