@@ -12,16 +12,16 @@ jobs:
       - name: Check out the repo
         uses: actions/checkout@v3
 
-      - name: Extract branch name
+      - name: Get branch name
+        id: extract_branch
+        uses: tj-actions/branch-names@v7
+
+      - name: Debug extract_branch
         shell: bash
         run: |
-          echo "Base ref is ${{ github.event.base_ref }}"
-          echo "git branch --show-current=$(git branch --show-current)"
-          raw=$(git branch -r --contains ${{ github.ref }})
-          branch=${raw##*/}
-          echo "::set-output name=branch::$branch"
-          echo "Branch is $branch."
-        id: extract_branch
+          echo "steps.branch-name.outputs.current_branch: ${{ steps.branch-name.outputs.current_branch }}"
+          echo "steps.branch-name.outputs.base_ref_branch: ${{ steps.branch-name.outputs.base_ref_branch }}"
+          echo "steps.branch-name.outputs.default_branch: ${{ steps.branch-name.outputs.default_branch }}"
 
       - name: Extract tag name
         shell: bash
