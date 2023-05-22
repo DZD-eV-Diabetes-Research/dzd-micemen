@@ -15,6 +15,7 @@ jobs:
       - name: Extract branch name
         shell: bash
         run: |
+          echo "Base ref is ${{ github.event.base_ref }}"
           raw=$(git branch -r --contains ${{ github.ref }})
           branch=${raw##*/}
           echo "::set-output name=branch::$branch"
