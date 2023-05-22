@@ -21,6 +21,7 @@ jobs:
           echo "steps.branch-name.outputs.default_branch: ${{ steps.branch-name.outputs.default_branch }}"
           echo "steps.branch-name.outputs.head_ref_branch: ${{ steps.branch-name.outputs.head_ref_branch }}"
           echo "steps.branch-name.outputs.ref_branch: ${{ steps.branch-name.outputs.ref_branch }}"
+          echo "steps.branch-name.outputs.tag: ${{ steps.branch-name.outputs.tag }}"
       - name: Check out the repo
         uses: actions/checkout@v3
         with:
