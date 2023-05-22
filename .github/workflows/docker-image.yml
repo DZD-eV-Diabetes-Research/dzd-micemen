@@ -25,6 +25,7 @@ jobs:
           echo "github.base_ref: ${{ github.base_ref }}"
           echo "github.head_ref: ${{ github.head_ref }}"
           echo "github.event: ${{ github.event }}"
+          echo "github.event.release.target_commitish: ${{ github.event.release.target_commitish }}"
       - name: Check out the repo
         uses: actions/checkout@v3
         with:
