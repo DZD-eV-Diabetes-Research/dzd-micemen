@@ -16,6 +16,7 @@ jobs:
         shell: bash
         run: |
           echo "Base ref is ${{ github.event.base_ref }}"
+          echo "git branch --show-current=$(git branch --show-current)"
           raw=$(git branch -r --contains ${{ github.ref }})
           branch=${raw##*/}
           echo "::set-output name=branch::$branch"
