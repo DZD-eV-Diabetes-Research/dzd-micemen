@@ -19,9 +19,9 @@ jobs:
       - name: Debug extract_branch
         shell: bash
         run: |
-          echo "steps.branch-name.outputs.current_branch: ${{ steps.branch-name.outputs.current_branch }}"
-          echo "steps.branch-name.outputs.base_ref_branch: ${{ steps.branch-name.outputs.base_ref_branch }}"
-          echo "steps.branch-name.outputs.default_branch: ${{ steps.branch-name.outputs.default_branch }}"
+          echo "steps.extract_branch.outputs.current_branch: ${{ steps.extract_branch.outputs.current_branch }}"
+          echo "steps.extract_branch.outputs.base_ref_branch: ${{ steps.extract_branch.outputs.base_ref_branch }}"
+          echo "steps.extract_branch.outputs.default_branch: ${{ steps.extract_branch.outputs.default_branch }}"
 
       - name: Extract tag name
         shell: bash
