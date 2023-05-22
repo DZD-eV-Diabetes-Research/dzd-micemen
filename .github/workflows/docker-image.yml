@@ -22,6 +22,9 @@ jobs:
           echo "steps.branch-name.outputs.head_ref_branch: ${{ steps.branch-name.outputs.head_ref_branch }}"
           echo "steps.branch-name.outputs.ref_branch: ${{ steps.branch-name.outputs.ref_branch }}"
           echo "steps.branch-name.outputs.tag: ${{ steps.branch-name.outputs.tag }}"
+          echo "github.base_ref: ${{ github.base_ref }}"
+          echo "github.head_ref: ${{ github.head_ref }}"
+          echo "github.event: ${{ github.event }}"
       - name: Check out the repo
         uses: actions/checkout@v3
         with:
