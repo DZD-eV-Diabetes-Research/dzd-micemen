@@ -8,6 +8,13 @@
 
 See [Vite Configuration Reference](https://vitejs.dev/config/).
 
+### Set Api Server URL
+
+Use following env variables to set env vars
+
+* `API_SERVER_BASE_PATH` The path where the api is available-. e.g. `https://restapi.connect.dzd-ev.de/mouseclinic/`. mind the trailing slash
+* `API_SERVER_BASE_URL` The base path (protocoll+domain) where the api is available. e.g. `https://restapi.connect.dzd-ev.de/`. mind the trailing slash
+
 ## Project Setup
 
 ```sh
