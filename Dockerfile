@@ -7,3 +7,5 @@ RUN npm run build
 FROM nginx:1.23
 COPY --from=build-stage  /app/dist /usr/share/nginx/html
 RUN ls /usr/share/nginx/html
+CMD ["/bin/sh",  "-c",  "envsubst < /usr/share/nginx/html/env.js.dist > /usr/share/nginx/html/env.js && exec nginx -g 'daemon off;'"]
+
